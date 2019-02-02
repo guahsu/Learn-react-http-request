@@ -30,24 +30,5 @@ axios.interceptors.response.use(
   }
 )
 
-// const myRequestInterceptors = axios.interceptors.request.use(request => {
-//   console.log('interceptors-request:', request)
-//   return request
-// }, error => {
-//   console.log('interceptors-request-error:', error)
-//   return Promise.reject(error)
-// })
-
-// const myResponseInterceptors = axios.interceptors.response.use(response => {
-//   console.log('interceptors-response:', response)
-//   return response
-// }, error => {
-//   console.log('interceptors-response-error:', error)
-//   return Promise.reject(error)
-// })
-
-// instance.interceptors.request.eject(myRequestInterceptors)
-// instance.interceptors.response.eject(myResponseInterceptors)
-
 ReactDOM.render(<App />, document.getElementById('root'))
 serviceWorker.unregister()
