@@ -9,11 +9,15 @@ import './Blog.css'
 class Blog extends Component {
   state = {
     posts: [],
-    selectedPostId: null
+    selectedPostId: null,
+    error: false
   }
 
   componentDidMount () {
-    axios.get('https://jsonplaceholder.typicode.com/posts')
+    const random = (Math.random()).toFixed(1)
+    const url = random >= 0.3 ? 'https://jsonplaceholder.typicode.com/posts' : 'WrongUrl'
+    console.log(`if random < 0.3, get wrong url, random: ${random}, url: ${url}`)
+    axios.get(url)
       .then(res => {
         const posts = res.data.slice(0, 4)
         const updatedPosts = posts.map(post => {
@@ -24,6 +28,10 @@ class Blog extends Component {
         })
         this.setState({ posts: updatedPosts })
       })
+      .catch(err => {
+        console.log(err)
+        this.setState({ error: true })
+      })
   }
 
   postSelectedHandler = (id) => {
@@ -31,15 +39,18 @@ class Blog extends Component {
   }
 
   render () {
-    const posts = this.state.posts.map(post => {
-      return (
-        <Post
-          title={post.title}
-          author={post.author}
-          clicked={() => this.postSelectedHandler(post.id)}
-          key={post.id} />
-      )
-    })
+    let posts = <p style={{ textAlign: 'center' }}>Something want wrong !</p>
+    if (!this.state.error) {
+      posts = this.state.posts.map(post => {
+        return (
+          <Post
+            title={post.title}
+            author={post.author}
+            clicked={() => this.postSelectedHandler(post.id)}
+            key={post.id} />
+        )
+      })
+    }
 
     return (
       <div>
