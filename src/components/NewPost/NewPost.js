@@ -24,7 +24,7 @@ class NewPost extends Component {
       body: this.state.body,
       author: this.state.author
     }
-    axios.post('https://jsonplaceholder.typicode.com/posts', post)
+    axios.post('/posts', post)
       .then(res => {
         if (res.status === 201) {
           window.alert('Success !')
