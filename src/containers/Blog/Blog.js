@@ -10,14 +10,17 @@ class Blog extends Component {
   state = {
     posts: [],
     selectedPostId: null,
+    selectedPostContent: null,
+    selectedPostLoading: false,
     error: false
   }
 
   componentDidMount () {
-    const random = (Math.random()).toFixed(1)
+    const random = Math.random().toFixed(1)
     const url = random >= 0.3 ? '/posts' : 'WrongUrl'
     console.log(`if random < 0.3, get wrong url, random: ${random}, url: ${url}`)
-    axios.get(url)
+    axios
+      .get(url)
       .then(res => {
         const posts = res.data.slice(0, 4)
         const updatedPosts = posts.map(post => {
@@ -34,8 +37,29 @@ class Blog extends Component {
       })
   }
 
-  postSelectedHandler = (id) => {
-    this.setState({ selectedPostId: id })
+  postSelectedHandler = id => {
+    if (this.state.selectedPostId !== id) {
+      this.setState({ selectedPostLoading: true })
+      axios.get(`/posts/${id}`).then(res => {
+        this.setState({
+          selectedPostId: id,
+          selectedPostContent: res.data,
+          selectedPostLoading: false
+        })
+      })
+    }
+  }
+
+  postDeletePostHandler = () => {
+    axios.delete(`/posts/${this.state.selectedPostId}`).then(res => {
+      if (res.status === 200) {
+        window.alert('Delete Post Success !')
+        this.setState({
+          selectedPostId: null,
+          selectedPostContent: null
+        })
+      }
+    })
   }
 
   render () {
@@ -47,18 +71,21 @@ class Blog extends Component {
             title={post.title}
             author={post.author}
             clicked={() => this.postSelectedHandler(post.id)}
-            key={post.id} />
+            key={post.id}
+          />
         )
       })
     }
 
     return (
       <div>
-        <section className='Posts'>
-          {posts}
-        </section>
+        <section className='Posts'>{posts}</section>
         <section>
-          <FullPost id={this.state.selectedPostId} />
+          <FullPost
+            id={this.state.selectedPostId}
+            loading={this.state.selectedPostLoading}
+            content={this.state.selectedPostContent}
+            deleted={this.postDeletePostHandler} />
         </section>
         <section>
           <NewPost />
